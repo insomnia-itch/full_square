@@ -1,0 +1,47 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+
+    [Header("Horizontal Movement")]
+    public float moveSpeed = 10f;
+    public Vector2 direction;
+    private bool facingRight = true;
+
+    [Header("Components")]
+    public Rigidbody2D rb;
+
+
+    [Header("Physics")]
+    public float maxSpeed = 12f;
+
+    //[Header("Collision")]
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float horizontalDirection = Input.GetAxisRaw("Horizontal");
+        float verticalDirection = Input.GetAxisRaw("Vertical");
+        direction = new Vector2(horizontalDirection, verticalDirection);
+    }
+
+    void movePlayer(float horizontal)
+    {
+        rb.AddForce(Vector2.right * horizontal * moveSpeed);
+    }
+
+    private void FixedUpdate()
+    {
+        movePlayer(direction.x);
+    }
+}
