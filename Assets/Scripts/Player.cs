@@ -38,6 +38,11 @@ public class Player : MonoBehaviour
     void movePlayer(float horizontal)
     {
         rb.AddForce(Vector2.right * horizontal * moveSpeed);
+
+        if(Mathf.Abs(rb.velocity.x) > maxSpeed) {
+            float playerDirection = Mathf.Sign(rb.velocity.x);
+            rb.velocity = new Vector2(playerDirection * maxSpeed, rb.velocity.y);
+        }
     }
 
     private void FixedUpdate()
