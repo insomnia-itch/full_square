@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     [Header("Horizontal Movement")]
     public float moveSpeed = 10f;
     public Vector2 direction;
-    private bool facingRight = true;
+    //private bool facingRight = true;
 
     [Header("Components")]
     public Rigidbody2D rb;
@@ -37,7 +37,8 @@ public class Player : MonoBehaviour
 
     void movePlayer(float horizontal)
     {
-        rb.AddForce(Vector2.right * horizontal * moveSpeed);
+        Vector2 horizonatlForce = Vector2.right * horizontal * moveSpeed;
+        rb.AddForce(horizonatlForce);
 
         if(Mathf.Abs(rb.velocity.x) > maxSpeed) {
             float playerDirection = Mathf.Sign(rb.velocity.x);
