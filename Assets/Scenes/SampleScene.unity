@@ -1245,8 +1245,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 20
   direction: {x: 0, y: 0}
+  jumpSpeed: 15
+  jumpDelay: 0.25
+  airDragMultiplier: 0.65
   rb: {fileID: 830238853}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 512
   maxSpeed: 12
+  linearDrag: 4
+  gravity: 1.4
+  fallMultiplier: 5
+  onGround: 0
+  groundLength: 0.6
+  colliderOffset: {x: -0.49, y: 0, z: 0}
 --- !u!1 &1090191213
 GameObject:
   m_ObjectHideFlags: 0
