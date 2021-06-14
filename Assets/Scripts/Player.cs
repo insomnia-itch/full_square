@@ -37,6 +37,13 @@ public class Player : MonoBehaviour
     // * Should be at the left/right edges of the sprite
     public Vector3 colliderOffset;
 
+    private Vector3 scaleChange, positionChange;
+
+    private void Awake()
+    {
+        scaleChange = new Vector3(-0.01f, -0.01f, -0.01f);
+        positionChange = new Vector3(0.0f, -0.2f, 0.0f);
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -64,7 +71,9 @@ public class Player : MonoBehaviour
         {
             Debug.Log("crouch DOWN");
             character.transform.position += Vector3.down* 0.02f;
-            character.transform.localScale = new Vector3(1.25f, 0.8f, 1);
+            character.transform.localScale = new Vector3(1.25f, 0.8f, 1f);
+            character.transform.position += positionChange;
+
             crouching = true;
         }
         if(Input.GetButtonUp("Crouch"))
