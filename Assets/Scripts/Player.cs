@@ -16,11 +16,13 @@ public class Player : MonoBehaviour
     public float jumpDelay = 0.25f;
     public float airDragMultiplier = 0.65f;
     private float jumpTimer;
+    public bool crouching = false;
 
     [Header("Components")]
     public Rigidbody2D rb;
     public LayerMask groundLayer;
-
+    public GameObject character;
+    Vector3 originalSize;
 
     [Header("Physics")]
     public float maxSpeed = 12f;
@@ -35,10 +37,17 @@ public class Player : MonoBehaviour
     // * Should be at the left/right edges of the sprite
     public Vector3 colliderOffset;
 
+    private Vector3 scaleChange, positionChange;
+
+    private void Awake()
+    {
+        scaleChange = new Vector3(-0.01f, -0.01f, -0.01f);
+        positionChange = new Vector3(0.0f, -0.2f, 0.0f);
+    }
     // Start is called before the first frame update
     void Start()
     {
-
+        originalSize = Vector3.one;
 
     }
 
@@ -46,7 +55,33 @@ public class Player : MonoBehaviour
     void Update()
     {
         bool wasOnGround = onGround;
+        bool wasCrouching = crouching;
+        crouching = (onGround && Input.GetButtonDown("Crouch")) ? true : false;
         onGround = Physics2D.Raycast(transform.position + colliderOffset, Vector2.down, groundLength, groundLayer) || Physics2D.Raycast(transform.position - colliderOffset, Vector2.down, groundLength, groundLayer);
+
+        if (!wasOnGround && onGround)
+        {
+            StartCoroutine(JumpSqueeze(1.25f, 0.8f, 0.05f));
+        }
+        if (Input.GetButtonDown("Crouch"))
+        {
+            Debug.Log("crouch down");
+        }
+        if (crouching)
+        {
+            Debug.Log("crouch DOWN");
+            character.transform.position += Vector3.down* 0.02f;
+            character.transform.localScale = new Vector3(1.25f, 0.8f, 1f);
+            character.transform.position += positionChange;
+
+            crouching = true;
+        }
+        if(Input.GetButtonUp("Crouch"))
+        {
+            Debug.Log("crouch uP????");
+            character.transform.localScale = new Vector3(1, 1, 1);
+            crouching = false;
+        }
 
         float horizontalDirection = Input.GetAxisRaw("Horizontal");
         float verticalDirection = Input.GetAxisRaw("Vertical");
@@ -55,6 +90,17 @@ public class Player : MonoBehaviour
         {
             jumpTimer = Time.time + jumpDelay;
         }
+
+        //if (Input.GetKeyDown(KeyCode.DownArrow) && onGround && !crouching)
+        //{
+        //    Crouch();
+        //}
+        //if (Input.GetKeyUp(KeyCode.DownArrow) && onGround && crouching)
+        //{
+        //    Uncrouch();
+        //}
+
+
         direction = new Vector2(horizontalDirection, verticalDirection);
     }
 
@@ -113,11 +159,49 @@ public class Player : MonoBehaviour
     }
 
 
+    void Crouch()
+    {
+        Vector3 originalSize = Vector3.one;
+        Vector3 newSize = new Vector3(0.8f, 1.25f, originalSize.z);
+        character.transform.localScale = Vector3.Lerp(originalSize, newSize, 1);
+        crouching = true;
+    }
+
+    void Uncrouch()
+    {
+        Vector3 originalSize = Vector3.one;
+        Vector3 newSize = new Vector3(1.25f, 0.8f, originalSize.z);
+        character.transform.localScale = Vector3.Lerp(originalSize, newSize, 1);
+        crouching = false;
+    }
+
     void Jump()
     {
         rb.velocity = new Vector2(rb.velocity.x, 0);
         rb.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
         jumpTimer = 0;
+    }
+
+
+    IEnumerator JumpSqueeze(float xSqueeze, float ySqueeze, float seconds)
+    {
+        Vector3 originalSize = Vector3.one;
+        Vector3 newSize = new Vector3(xSqueeze, ySqueeze, originalSize.z);
+        float t = 0f;
+        while (t <= 1.0)
+        {
+            t += Time.deltaTime / seconds;
+            character.transform.localScale = Vector3.Lerp(originalSize, newSize, t);
+            yield return null;
+        }
+        t = 0f;
+        while (t <= 1.0)
+        {
+            t += Time.deltaTime / seconds;
+            character.transform.localScale = Vector3.Lerp(newSize, originalSize, t);
+            yield return null;
+        }
+
     }
 
     private void OnDrawGizmos()
